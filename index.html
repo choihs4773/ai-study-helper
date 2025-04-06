@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 공부 도우미</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+      text-align: center;
+    }
+    textarea {
+      width: 90%;
+      height: 200px;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #output {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      white-space: pre-wrap;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 AI 공부 도우미</h1>
+  <textarea id="inputText" placeholder="여기에 공부할 내용을 붙여넣으세요..."></textarea>
+  <div>
+    <button onclick="askGPT('요약해줘')">요약하기</button>
+    <button onclick="askGPT('퀴즈 만들어줘')">퀴즈 만들기</button>
+    <button onclick="askGPT('어려운 단어를 설명해줘')">단어 설명</button>
+  </div>
+  <div id="output"></div>
+
+  <script>
+    const API_KEY = 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; // 여기에 너의 GPT API 키를 넣어줘
+
+    async function askGPT(task) {
+      const input = document.getElementById("inputText").value;
+      const output = document.getElementById("output");
+      output.innerText = "AI가 생각 중...";
+
+      const prompt = `${input}\n\n위 내용을 기반으로 ${task}`;
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.7
+        }),
+      });
+
+      const data = await response.json();
+      output.innerText = data.choices?.[0]?.message?.content || "오류가 발생했어요.";
+    }
+  </script>
+</body>
+</html>
